@@ -118,6 +118,7 @@ public class RootScreen extends DrivesChangedListenerScreen {
                 actionMenu.clear();
                 if (drivesList.size() > 1) {
                     actionMenu.add(Msg.COPY);
+                    actionMenu.add(Msg.DD);                    
                 }
                 actionMenu.add(Msg.VIEW);
                 if (prevSelectedAction == Msg.VIEW) {
@@ -208,6 +209,8 @@ public class RootScreen extends DrivesChangedListenerScreen {
             Str action = actionMenu.getSelectedItem();
             if (action == Msg.COPY) {
                 setCurrScreen(new CopyScreen(this, selectedDrive));
+            } else if (action == Msg.DD) {
+                setCurrScreen(new DDScreen(this, selectedDrive));
             } else if (action == Msg.VIEW) {
                 setCurrScreen(new ViewScreen(this, selectedDrive));
             } else if (action == Msg.WIPE) {
