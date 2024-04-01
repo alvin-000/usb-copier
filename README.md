@@ -1,3 +1,14 @@
+# Fork Changes
+Additional Functionality
+1. Added DD Copy funtionaity and menu, to include Progress Bar integration
+2. Set Wipe Quick to format entire disk (was just partition before)
+3. Set Wipe Secure to DD Zero entire disk (was just partition before)
+
+Known Issues
+1. Drive formatting is done directly and without a partitions (not all devices will support reading this)
+2. Multi patrition DD copy progress bar is inaccurate, due to original disk size only accounting for partition size (not raw disk size)
+3. Setup instructions do not work on latest Raspian distro (Bookwork), but still work on Raspian Buster
+
 # usb-copier
 USB drive copier example project for the [Adafruit 128x64 OLED Raspberry Pi bonnet](https://www.adafruit.com/product/3531),
 using a USB hub such as the [Zero4U](https://www.adafruit.com/product/3298) shield.
