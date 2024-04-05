@@ -16,15 +16,15 @@ Fork of [lukehutch/usb-copier](https://github.com/lukehutch/usb-copier) and [2we
 1. Added DD Copy funtionaity and menu, to include progress bar of copy/wipe
 2. Set Wipe-> Quick to format entire disk (was only partition before)
 3. Set Wipe-> Secure to DD Zero entire disk (was only partition before)
-4. Show true size of disk (in events where there is a multi-partition/volume disk)
-5. Disk will not show if it has no mounted volumes
+4. Show true size of disk in parenthesis (in events where there is a multi-partition/volume disk)
+5. DD commands use 64K for `bs` for faster clone/wipe
 
 ### Known Issues
 1. Drive formatting is done directly and without adding patrition table (not all devices will support reading this)
 2. Setup instructions do not work on latest Raspian distro (Bookwork), but still work on Raspian Buster. This means it is not compatible with Raspberry Pi 5 (Bookworm or above). As this is a legacy OS, it is not recommened this device be Internet connected. 
 3. ExFat automount is not supported at this time
 4. No unmount function (FAT32 volume files are unlikely to be damaged, but the safety bit will just not be written to disk)
-
+5. Disk will not show if it has no mounted volumes
 
 ## Required Items
 - Raspberry Pi 4 or below (Pi 5 is NOT compatible with Raspian Buster)
