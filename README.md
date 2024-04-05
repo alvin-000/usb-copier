@@ -1,10 +1,10 @@
 # usb-copier
-Fork of [lukehutch/usb-copier](https://github.com/lukehutch/usb-copier) and [2wenty2wo/usb-copier](https://github.com/2wenty2wo/usb-copier) designed to make turn the original example project into a practical appliance that can power on to copy files from a volume, clone boot disks, check files on a disk before putting in Windows computer, or re-format/wipe disk. 
+Fork of [lukehutch/usb-copier](https://github.com/lukehutch/usb-copier) and [2wenty2wo/usb-copier](https://github.com/2wenty2wo/usb-copier) designed to make turn the original example project into a more practical appliance to copy files from a volume, clone boot disks, check files on a disk before putting in Windows computer, or re-format/wipe disk. 
 
 ![image](https://github.com/alvin-000/usb-copier/assets/152043358/ab89898e-d857-4dea-95d7-d55ab86e829e)
 
 
-## Functionality
+## Functionality Description
 - **Copy:** Copies all files from one volume onto another disk's volume. THe destination partition is not altered. Destination volume must be larger than total size of all files
 - **DD:** DD copied the entire disk from selected disk to destination disk. Destination disk must be larger than selected disk
 - **View:** View a list of all files on a volume
