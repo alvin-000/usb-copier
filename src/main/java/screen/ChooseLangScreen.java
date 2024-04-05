@@ -53,7 +53,7 @@ public class ChooseLangScreen extends Screen {
 
         langMenu = new Menu(Font.GNU_Unifont_16().newStyle(), 2, /* hLayout = */ false, "English", "조선말", "中文");
         layout.add(langMenu, VAlign.CENTER);
-        langMenu.setSelectedIdx(1);
+        langMenu.setSelectedIdx(0);
 
         setUI(layout);
     }

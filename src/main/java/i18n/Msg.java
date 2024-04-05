@@ -70,6 +70,6 @@ public class Msg {
 
     public static final Str NUM_FILES = new Str("#$0: $1 files", "#$0: 파일 $1 개", "#$0: $1 个文件");
     public static final Str FILE_COUNT = new Str("$0 files", "파일 $0 개", "$0 个文件");
-    public static final Str DISK_SIZE = new Str("$0 GB", "$0G B", "$0 GB");
+    public static final Str DISK_SIZE = new Str("Disk Size $0", "$0", "$0");
     public static final Str CANT_READ_PORT = new Str("Can't read #$0", "#$0 를 읽을 수 없다", "无法读取 #$0");
 }

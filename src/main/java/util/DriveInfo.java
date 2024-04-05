@@ -43,6 +43,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+
 import exec.Exec;
 
 public class DriveInfo implements Comparable<DriveInfo> {
@@ -72,6 +73,10 @@ public class DriveInfo implements Comparable<DriveInfo> {
 
     /** The USB port the drive is plugged into (1-4). */
     public volatile int port;
+
+    public volatile long realDiskSize = -5;
+
+    public volatile String realDiskSizeHuman = "";
 
     private final Object fileListingLock = new Object();
 
@@ -160,7 +165,7 @@ public class DriveInfo implements Comparable<DriveInfo> {
 
     public boolean unmount() {
         // isMounted will be updated by DiskMonitor on unmount event
-        var taskOutput = Exec.execWithTaskOutputSynchronous("devmon", "--unmount", partitionDevice);
+        var taskOutput = Exec.execWithTaskOutputSynchronous("devmon", "--unmount-removable");
         if (taskOutput.exitCode != 0) {
             System.out.println("Unmount failed with exit code " + taskOutput.exitCode + " : " + taskOutput.stderr);
         }
@@ -239,6 +244,36 @@ public class DriveInfo implements Comparable<DriveInfo> {
         }
     }
 
+    public void updateRealDiskSize() {
+        Exec.then(Exec.execWithTaskOutput("lsblk", "-b", "-n", "-d", "-o", "SIZE", rawDriveDevice), taskOutput -> {
+        if (taskOutput.exitCode != 0) {
+            System.out.println("Bad exit code " + taskOutput.exitCode + " from lsblk: " + taskOutput.stderr);
+        } else {
+            var stdout = taskOutput.stdout;
+            String[] lines = stdout.split("\n");
+            String line = lines[0];
+            StringTokenizer tok = new StringTokenizer(line);
+            realDiskSize = Long.parseLong(tok.nextToken());
+            System.out.println("Full Disk Size in Bytes (lsblk): " + rawDriveDevice + ": "  + String.valueOf(realDiskSize));
+        }
+        });
+    }
+
+    public void updateRealDiskSizeHuman() {
+        Exec.then(Exec.execWithTaskOutput("lsblk", "-n", "-d", "-o", "SIZE", rawDriveDevice), taskOutput -> {
+        if (taskOutput.exitCode != 0) {
+            System.out.println("Bad exit code " + taskOutput.exitCode + " from lsblk: " + taskOutput.stderr);
+        } else {
+            var stdout = taskOutput.stdout;
+            String[] lines = stdout.split("\n");
+            String line = lines[0];
+            StringTokenizer tok = new StringTokenizer(line);
+            realDiskSizeHuman = tok.nextToken().replaceAll("\\s+","");
+            System.out.println("Full Disk Size (lsblk): " + rawDriveDevice + ": "  + realDiskSizeHuman);
+        }
+        });
+    }    
+
     public void clearListing() {
         // Clear previous file listing
         if (fileListingFuture != null) {
@@ -278,6 +313,7 @@ public class DriveInfo implements Comparable<DriveInfo> {
     private static final long _1k = 1024L;
     private static final long _1M = 1024L * _1k;
     private static final long _1G = 1024L * _1M;
+    private static final long _1T = 1024L * _1G;
     private static final String UNK = "??";
 
     public static String getInHumanUnits(long size) {
@@ -289,8 +325,10 @@ public class DriveInfo implements Comparable<DriveInfo> {
             return decFrac(size, _1k) + "kB";
         } else if (size < _1G) {
             return decFrac(size, _1M) + "MB";
-        } else {
+        } else if (size < _1T) {
             return decFrac(size, _1G) + "GB";
+        } else {
+            return decFrac(size, _1T) + "TB";
         }
     }
 
@@ -306,8 +344,10 @@ public class DriveInfo implements Comparable<DriveInfo> {
             return (numer >= 0 ? decFrac(numer, _1k) : UNK) + (showDenom ? "/" + decFrac(denom, _1k) : "") + "kB";
         } else if (denom < _1G) {
             return (numer >= 0 ? decFrac(numer, _1M) : UNK) + (showDenom ? "/" + decFrac(denom, _1M) : "") + "MB";
-        } else {
+        } else if (denom < _1T) {
             return (numer >= 0 ? decFrac(numer, _1G) : UNK) + (showDenom ? "/" + decFrac(denom, _1G) : "") + "GB";
+        } else {
+            return (numer >= 0 ? decFrac(numer, _1T) : UNK) + (showDenom ? "/" + decFrac(denom, _1T) : "") + "TB";
         }
     }
 
@@ -321,7 +361,7 @@ public class DriveInfo implements Comparable<DriveInfo> {
     }
 
     public String toStringShort() {
-        return "#" + port + " : " + getUsedInHumanUnits(true);
+        return "#" + port + " : " + getUsedInHumanUnits(true) + " (" + realDiskSizeHuman + ")";
     }
 
     @Override

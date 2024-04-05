@@ -59,7 +59,6 @@ import util.DiskMonitor;
 import util.DriveInfo;
 
 public class DoDDScreen extends Screen {
-
     private final DriveInfo selectedDrive;
     private volatile List<DriveInfo> destDrives;
     private final List<ProgressBar> progressBars;
@@ -75,12 +74,10 @@ public class DoDDScreen extends Screen {
 
         VLayout layout = new VLayout();
 
-        //selectedDrive.updateRealDiskSize();
-
         layout.add(new TextElement(Main.UI_FONT.newStyle(), new Str(Msg.COPYING, selectedDrive.port)),
                 VAlign.CENTER);
         layout.addSpace(1, VAlign.CENTER);
-        layout.add(new TextElement(Main.UI_FONT.newStyle(), new Str(Msg.DISK_SIZE, selectedDrive.realDiskSize)), VAlign.CENTER);
+        layout.add(new TextElement(Main.UI_FONT.newStyle(), new Str(Msg.DISK_SIZE, selectedDrive.realDiskSizeHuman)), VAlign.CENTER);
         layout.addSpace(1, VAlign.CENTER);
 
         // Create table of progress bars
@@ -118,12 +115,12 @@ public class DoDDScreen extends Screen {
                         spaceIdx = stderrLine.length();
                     }
                     long bytesProcessed = Long.parseLong(stderrLine.substring(0, spaceIdx));
-                    int percent = (int) ((bytesProcessed * 100.0f) / selectedDrive.diskSize + 0.5f);
-                    progressBar.setProgress(percent, 105);
+                    int percent = (int) ((bytesProcessed * 100.0f) / selectedDrive.realDiskSize + 0.5f);
+                    progressBar.setProgress(percent, 100);
                     repaint();
                 }
             }, //
-                    "dd", "if=" + selectedDrive.rawDriveDevice, "of=" + destDrive.rawDriveDevice, "bs=4096",
+                    "dd", "if=" + selectedDrive.rawDriveDevice, "of=" + destDrive.rawDriveDevice, "bs=64K",
                     "status=progress", "oflag=direct");
 
             // Set each progress meter to 100% at the end of the copy, since "dd --progress2" will show 0%
@@ -218,6 +215,10 @@ public class DoDDScreen extends Screen {
             driveInfo.updateDriveSizeAsync();
 
             driveInfo.clearListing();
+
+            driveInfo.updateRealDiskSize();
+
+            driveInfo.updateRealDiskSizeHuman();
 
             // Unmount so the drives can be pulled out without setting the dirty bit
             driveInfo.unmount();

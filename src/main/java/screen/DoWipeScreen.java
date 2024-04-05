@@ -65,12 +65,12 @@ public class DoWipeScreen extends Screen {
 
     private TaskOutput mkfs() {
         // Format partition as vfat
-        System.out.println("Formatting as vfat: " + selectedDrive.partitionDevice);
-        return Exec.execWithTaskOutputSynchronous("/sbin/mkfs.vfat", selectedDrive.partitionDevice);
+        System.out.println("Formatting as vfat: " + selectedDrive.rawDriveDevice);
+        return Exec.execWithTaskOutputSynchronous("/sbin/mkfs.vfat", "-I", selectedDrive.rawDriveDevice);
     }
 
     private Future<Integer> ddWipe(DriveInfo selectedDrive) {
-        System.out.println("Performing deep wipe: " + selectedDrive.partitionDevice);
+        System.out.println("Performing deep wipe: " + selectedDrive.rawDriveDevice);
         ddStderrLines.clear();
         return Exec.execConsumingLines(null, stderrLine -> {
             ddStderrLines.add(stderrLine);
@@ -81,12 +81,12 @@ public class DoWipeScreen extends Screen {
                     spaceIdx = stderrLine.length();
                 }
                 long bytesProcessed = Long.parseLong(stderrLine.substring(0, spaceIdx));
-                int percent = (int) ((bytesProcessed * 100.0f) / selectedDrive.diskSize + 0.5f);
+                int percent = (int) ((bytesProcessed * 100.0f) / selectedDrive.realDiskSize + 0.5f);
                 progressBar.setProgress(percent, 100);
                 repaint();
             }
         }, //
-                "dd", "if=/dev/zero", "of=" + selectedDrive.partitionDevice, "bs=4096", "status=progress",
+                "dd", "if=/dev/zero", "of=" + selectedDrive.rawDriveDevice, "bs=64K", "status=progress",
                 "oflag=direct");
     }
 
@@ -103,7 +103,10 @@ public class DoWipeScreen extends Screen {
 
         VLayout layout = new VLayout();
         layout.add(new TextElement(Main.UI_FONT.newStyle(), new Str(Msg.ERASING, selectedDrive.port)));
-        layout.addSpace(4);
+        //layout.addSpace(4);
+        //layout.addSpace(1, VAlign.CENTER);
+        layout.add(new TextElement(Main.UI_FONT.newStyle(), new Str(Msg.DISK_SIZE, selectedDrive.realDiskSizeHuman)));
+        //layout.addSpace(1, VAlign.CENTER);
         layout.add(progressBar = new ProgressBar(OLEDDriver.DISPLAY_WIDTH * 8 / 10, 10));
         setUI(layout);
     }

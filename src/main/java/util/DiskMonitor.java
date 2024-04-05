@@ -105,6 +105,10 @@ public class DiskMonitor {
 
         System.out.println("Drive mounted: " + driveInfo);
 
+        driveInfo.updateRealDiskSize();
+
+        driveInfo.updateRealDiskSizeHuman();
+
         // Call df to get drive sizes (updated asynchronously).
         // Calls DiskMonitor.drivesChanged() only if successful.
         driveInfo.updateDriveSizeAsync();
