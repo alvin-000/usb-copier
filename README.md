@@ -1,3 +1,6 @@
+# Project Archived
+Replaced with https://github.com/alvin-000/pi_usb_disk_manager
+
 # usb-copier
 Fork of [lukehutch/usb-copier](https://github.com/lukehutch/usb-copier) and [2wenty2wo/usb-copier](https://github.com/2wenty2wo/usb-copier) designed to make turn the original example project into a more practical appliance to copy files from a volume, clone boot disks, check files on a disk before putting in Windows computer, or re-format/wipe disk. 
 
